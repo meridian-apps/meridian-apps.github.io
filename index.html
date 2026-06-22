@@ -2,16 +2,62 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Meridian Apps</title>
-<meta http-equiv="refresh" content="0; url=/rucktrack-docs/">
-<link rel="canonical" href="https://meridian-apps.github.io/rucktrack-docs/">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meridian Apps — Garmin Connect IQ apps for rucking and loaded carries</title>
+<meta name="description" content="Meridian Apps builds Garmin Connect IQ apps for rucking, weighted-vest walks, and loaded hikes: RuckTrack, the full rucking app, and PackCal, a single-cell load-aware calorie data field.">
+<link rel="canonical" href="https://meridian-apps.github.io/">
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 32rem; margin: 4rem auto; padding: 0 1rem; color: #222; }
-  a { color: #3B9E3B; }
+  :root { --rt: #3B9E3B; --pc: #6A3CDF; --ink: #1c2620; --mute: #5a6b5a; --line: #e2e8e2; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: #fafcfa; margin: 0; line-height: 1.55; }
+  .wrap { max-width: 52rem; margin: 0 auto; padding: 3.5rem 1.25rem 3rem; }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  header h1 { font-size: 2rem; margin: 0 0 0.4rem; letter-spacing: -0.01em; }
+  header p { color: var(--mute); margin: 0; font-size: 1.05rem; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 640px) { .cards { grid-template-columns: 1fr; } }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; border-top: 4px solid var(--accent); }
+  .card.rt { --accent: var(--rt); }
+  .card.pc { --accent: var(--pc); }
+  .card h2 { margin: 0 0 0.15rem; font-size: 1.35rem; }
+  .card .tag { color: var(--mute); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 0.8rem; }
+  .card p.desc { margin: 0 0 1.3rem; flex: 1; }
+  .links { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .links a { font-size: 0.92rem; font-weight: 600; text-decoration: none; padding: 0.5rem 0.9rem; border-radius: 8px; }
+  .links a.primary { background: var(--accent); color: #fff; }
+  .links a.secondary { color: var(--accent); border: 1px solid var(--accent); }
+  footer { text-align: center; color: var(--mute); font-size: 0.85rem; margin-top: 3rem; }
 </style>
 </head>
 <body>
-<h1>Meridian Apps</h1>
-<p>Redirecting to <a href="/rucktrack-docs/">RuckTrack documentation</a>.</p>
+<div class="wrap">
+  <header>
+    <h1>Meridian Apps</h1>
+    <p>Garmin Connect IQ apps for rucking, weighted-vest walks, and loaded hikes.</p>
+  </header>
+  <div class="cards">
+    <div class="card rt">
+      <h2>RuckTrack</h2>
+      <p class="tag">The full rucking app</p>
+      <p class="desc">A dedicated Connect IQ activity app: multiple live screens, on-watch load presets, post-activity summaries, and load-aware calories via the Pandolf equation. For when you want rucking to be its own thing on the watch.</p>
+      <div class="links">
+        <a class="primary" href="https://apps.garmin.com/apps/201e9e43-f33c-4b56-b3f5-8a67184e3d1c">Get on Connect IQ</a>
+        <a class="secondary" href="/rucktrack-docs/">Docs &amp; FAQ</a>
+      </div>
+    </div>
+    <div class="card pc">
+      <h2>PackCal</h2>
+      <p class="tag">Vest &amp; pack calories, one data field</p>
+      <p class="desc">A single data field you drop into a Hike, Walk, or Ruck you already use. It adds the calories your vest or pack actually costs, with the same Pandolf math as RuckTrack and calories as the hero of the cell. The lightweight option.</p>
+      <div class="links">
+        <a class="primary" href="https://apps.garmin.com/apps/809c953d-9547-49d3-9949-c27ad3a5c218">Get on Connect IQ</a>
+        <a class="secondary" href="/packcal-docs/">Docs &amp; FAQ</a>
+      </div>
+    </div>
+  </div>
+  <footer>
+    &copy; 2026 Meridian. Independent apps. Garmin and Connect IQ are trademarks of Garmin Ltd.
+  </footer>
+</div>
 </body>
 </html>
