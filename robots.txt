@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://meridian-apps.github.io/rucktrack-docs/sitemap.xml
+Sitemap: https://meridian-apps.github.io/packcal-docs/sitemap.xml
