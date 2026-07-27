@@ -24,6 +24,7 @@ Usage:
     scripts/check-pages.py                # this repo's *.html
     scripts/check-pages.py path/to/*.html # explicit files
     scripts/check-pages.py --quiet        # only print failures
+    scripts/check-pages.py --fix          # regenerate FAQPage schemas from the pages
 
 Exit: 0 all clean · 1 one or more checks failed.
 
@@ -64,6 +65,29 @@ def _qkey(s):
     drift. Without this the check reports every question on such a page as
     missing and drowns the two or three that genuinely differ."""
     return re.sub(r"^\d+\.\s*", "", s).strip()
+
+
+def expected_entities(src):
+    """The mainEntity a page's visible content implies.
+
+    This is the CANONICAL generator: --fix writes exactly this, and the check
+    compares against exactly this, so there is one algorithm rather than a
+    generator and a validator that can disagree. Answers flatten <p> and <li>
+    in document order, which is what a reader sees.
+    """
+    body = src[src.find("<h2 id="):]
+    out = []
+    for chunk in [c for c in re.split(r"(?=<h2 id=)", body) if c.startswith("<h2")]:
+        q = _text(re.search(r'<h2 id="[^"]+">(.*?)</h2>', chunk, re.S).group(1))
+        ans = chunk[chunk.find("</h2>") + 5:]
+        ans = re.split(r'<p class="back"|</div>', ans)[0]
+        parts = [a or b for a, b in re.findall(r"<p>(.*?)</p>|<li>(.*?)</li>", ans, re.S)]
+        txt = re.sub(r"\s+", " ", " ".join(_text(x) for x in parts)).strip()
+        if txt:
+            out.append({"@type": "Question", "name": q,
+                        "acceptedAnswer": {"@type": "Answer", "text": txt}})
+    return out
+
 
 
 def check_page(path):
@@ -114,6 +138,20 @@ def check_page(path):
             for x in [x for x in hk if x not in qk]:
                 errs.append(f"{name}: page question MISSING from schema: {x!r}")
 
+        # Question parity is not enough: an ANSWER can be rewritten on the page
+        # while the schema keeps the old text, which is invisible to a reader and
+        # still wrong in the structured data. Compare against the canonical
+        # generation. (Hit for real on 2026-07-27: the install-stuck answer was
+        # rewritten and only a manual regeneration kept the schema honest.)
+        want = {e["name"]: e["acceptedAnswer"]["text"] for e in expected_entities(src)}
+        for e in s.get("mainEntity", []):
+            nm = _text(e.get("name", ""))
+            have = _text((e.get("acceptedAnswer") or {}).get("text", ""))
+            exp = want.get(nm)
+            if exp is not None and have != exp:
+                errs.append(f"{name}: schema ANSWER is stale for {nm!r}\n"
+                            f"          run: scripts/check-pages.py --fix")
+
     # --- 3. a table of contents must list every heading --------------------
     toc = re.search(r'<div class="toc">(.*?)</div>', src, re.S)
     if toc:
@@ -137,6 +175,24 @@ def check_page(path):
     return errs, notes
 
 
+def fix_page(path):
+    """Rewrite a page's FAQPage mainEntity from its visible content."""
+    src = path.read_text(encoding="utf-8")
+    m = re.search(r'(<script type="application/ld\+json">)(.*?)(</script>)', src, re.S)
+    if not m:
+        return False
+    try:
+        doc = json.loads(m.group(2))
+    except json.JSONDecodeError:
+        return False
+    if doc.get("@type") != "FAQPage":
+        return False
+    doc["mainEntity"] = expected_entities(src)
+    body = m.group(1) + "\n" + json.dumps(doc, indent=2, ensure_ascii=False) + "\n" + m.group(3)
+    path.write_text(src[:m.start()] + body + src[m.end():], encoding="utf-8")
+    return True
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     quiet = "--quiet" in sys.argv
@@ -145,6 +201,12 @@ def main():
     if not files:
         print("check-pages: no html files found", file=sys.stderr)
         return 1
+
+    if "--fix" in sys.argv:
+        for f in files:
+            if fix_page(f):
+                print(f"  fixed  {f.name} (schema regenerated from the page)")
+        print()
 
     total_err = 0
     for f in files:
