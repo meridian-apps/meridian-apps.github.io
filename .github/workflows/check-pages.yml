@@ -1,0 +1,28 @@
+name: check-pages (shared)
+
+# Reusable structural check for the Meridian docs sites. Both rucktrack-docs and
+# packcal-docs call this, so the checker exists once. See scripts/check-pages.py
+# for what it guards and why each check earns its place.
+#
+# It checks out TWO repos: the calling site (for its HTML) and this one (for the
+# script). Both docs repos are public and in this org, so no token is needed.
+on:
+  workflow_call:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the calling site
+        uses: actions/checkout@v4
+
+      - name: Check out the shared checker
+        uses: actions/checkout@v4
+        with:
+          repository: meridian-apps/meridian-apps.github.io
+          path: .shared
+
+      # Glob expands in the caller's checkout root, so this lints the caller's
+      # pages, not this repo's. Stdlib only, so there is no install step.
+      - name: check-pages
+        run: python3 .shared/scripts/check-pages.py *.html
