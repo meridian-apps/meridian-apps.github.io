@@ -1,0 +1,8 @@
+# Python bytecode from scripts/ (check-pages.py and friends). Regenerated on
+# every run, and while untracked it makes the repo look dirty, which is enough
+# for refresh-garmin-repos to skip the whole repo rather than fast-forward it.
+__pycache__/
+*.py[cod]
+
+# macOS finder metadata — same problem, since the family is worked from a Mac too.
+.DS_Store
